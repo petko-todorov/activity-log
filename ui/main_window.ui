@@ -31,6 +31,11 @@
           <height>31</height>
          </size>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+         </font>
+        </property>
        </widget>
       </item>
       <item>
@@ -47,6 +52,11 @@
           <height>31</height>
          </size>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>PushButton</string>
         </property>
@@ -61,7 +71,13 @@
      </layout>
     </item>
     <item>
-     <widget class="QListView" name="listView"/>
+     <widget class="QListView" name="listView">
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

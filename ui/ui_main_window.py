@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'main_windowkEdIfu.ui'
+## Form generated from reading UI file 'main_windowORqKJH.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.12.0
 ##
@@ -38,6 +38,9 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.lineEdit.sizePolicy().hasHeightForWidth())
         self.lineEdit.setSizePolicy(sizePolicy)
         self.lineEdit.setMinimumSize(QSize(219, 31))
+        font = QFont()
+        font.setPointSize(11)
+        self.lineEdit.setFont(font)
 
         self.horizontalLayout.addWidget(self.lineEdit)
 
@@ -49,6 +52,9 @@ class Ui_MainWindow(object):
         sizePolicy1.setHeightForWidth(self.pushButton.sizePolicy().hasHeightForWidth())
         self.pushButton.setSizePolicy(sizePolicy1)
         self.pushButton.setMinimumSize(QSize(116, 31))
+        font1 = QFont()
+        font1.setPointSize(10)
+        self.pushButton.setFont(font1)
         self.pushButton.setAutoDefault(False)
 
         self.horizontalLayout.addWidget(self.pushButton)
@@ -58,6 +64,7 @@ class Ui_MainWindow(object):
 
         self.listView = QListView(self.centralwidget)
         self.listView.setObjectName(u"listView")
+        self.listView.setFont(font)
 
         self.verticalLayout.addWidget(self.listView)
 

@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 
 from PySide6.QtCore import QStringListModel, Qt
-from PySide6.QtWidgets import QAbstractItemView, QMainWindow, QCompleter
+from PySide6.QtWidgets import QAbstractItemView, QMainWindow, QCompleter, QMenu
 
 import storage
 from ui.ui_main_window import Ui_MainWindow
@@ -13,6 +13,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
+        self.keys = None
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
@@ -52,19 +53,23 @@ class MainWindow(QMainWindow):
             json.dump(self.data, file, indent=4)
 
     def refresh_list(self):
+        sorted_items = sorted(
+            self.data.items(),
+            key=lambda x: datetime.strptime(x[1], self.DATE_FORMAT),
+            reverse=True,
+        )
+        self.keys = [key for key, _ in sorted_items]
+
         items = []
-        for key, value in sorted(
-                self.data.items(),
-                key=lambda x: datetime.strptime(x[1], self.DATE_FORMAT),
-                reverse=True):
+        for key, value in sorted_items:
             days = self.calculate_days_passed(value)
             if days == 0:
                 items.append(f"{key} - today")
             else:
-                items.append(f"{key} - {self.calculate_days_passed(value)} day{'' if days == 1 else 's'} ago")
+                items.append(f"{key} - {days} day{'' if days == 1 else 's'} ago")
         self.model.setStringList(items)
 
-        self.completer_model.setStringList(list(self.data.keys()))
+        self.completer_model.setStringList(self.keys)
 
     def show_context_menu(self, pos):
         index = self.ui.listView.indexAt(pos)
@@ -73,9 +78,16 @@ class MainWindow(QMainWindow):
 
         self.ui.listView.setCurrentIndex(index)
 
-    @staticmethod
-    def calculate_days_passed(date_str):
-        last_date = datetime.strptime(date_str, "%H:%M:%S %d.%m.%Y").date()
+        menu = QMenu(self)
+        delete_action = menu.addAction("Delete")
+        chosen = menu.exec(self.ui.listView.viewport().mapToGlobal(pos))
+        if chosen == delete_action:
+            del self.data[self.keys[index.row()]]
+            self.save_data()
+            self.refresh_list()
+
+    def calculate_days_passed(self, date_str):
+        last_date = datetime.strptime(date_str, self.DATE_FORMAT).date()
         today = datetime.now().date()
         diff = today - last_date
         return diff.days

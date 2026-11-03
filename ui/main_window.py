@@ -79,6 +79,7 @@ class MainWindow(QMainWindow):
         self.ui.listView.setCurrentIndex(index)
 
         menu = QMenu(self)
+        menu.setFont(self.ui.listView.font())
         delete_action = menu.addAction("Delete")
         chosen = menu.exec(self.ui.listView.viewport().mapToGlobal(pos))
         if chosen == delete_action:

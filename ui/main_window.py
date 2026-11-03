@@ -1,5 +1,5 @@
-import datetime
 import json
+from datetime import datetime
 
 from PySide6.QtCore import QStringListModel, Qt
 from PySide6.QtWidgets import QAbstractItemView, QMainWindow, QCompleter
@@ -9,6 +9,8 @@ from ui.ui_main_window import Ui_MainWindow
 
 
 class MainWindow(QMainWindow):
+    DATE_FORMAT = "%H:%M:%S %d.%m.%Y"
+
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow()
@@ -29,6 +31,9 @@ class MainWindow(QMainWindow):
 
         self.data = storage.storage()
 
+        self.ui.listView.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.ui.listView.customContextMenuRequested.connect(self.show_context_menu)
+
         self.refresh_list()
 
     def on_ok(self):
@@ -36,7 +41,7 @@ class MainWindow(QMainWindow):
         if not text:
             return
 
-        self.data[text] = datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+        self.data[text] = datetime.now().strftime(self.DATE_FORMAT)
         self.save_data()
 
         self.refresh_list()
@@ -50,9 +55,27 @@ class MainWindow(QMainWindow):
         items = []
         for key, value in sorted(
                 self.data.items(),
-                key=lambda x: datetime.datetime.strptime(x[1], "%d.%m.%Y %H:%M:%S"),
+                key=lambda x: datetime.strptime(x[1], self.DATE_FORMAT),
                 reverse=True):
-            items.append(f"{key}: {value}")
+            days = self.calculate_days_passed(value)
+            if days == 0:
+                items.append(f"{key} - today")
+            else:
+                items.append(f"{key} - {self.calculate_days_passed(value)} day{'' if days == 1 else 's'} ago")
         self.model.setStringList(items)
 
         self.completer_model.setStringList(list(self.data.keys()))
+
+    def show_context_menu(self, pos):
+        index = self.ui.listView.indexAt(pos)
+        if not index.isValid():
+            return
+
+        self.ui.listView.setCurrentIndex(index)
+
+    @staticmethod
+    def calculate_days_passed(date_str):
+        last_date = datetime.strptime(date_str, "%H:%M:%S %d.%m.%Y").date()
+        today = datetime.now().date()
+        diff = today - last_date
+        return diff.days

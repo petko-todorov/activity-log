@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 
 from PySide6.QtCore import QStringListModel, Qt, QTimer
-from PySide6.QtWidgets import QAbstractItemView, QMainWindow, QCompleter, QMenu
+from PySide6.QtWidgets import QAbstractItemView, QMainWindow, QCompleter, QMenu, QMessageBox, QInputDialog
 
 import storage
 from ui.ui_main_window import Ui_MainWindow
@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
         if not text:
             return
 
-        self.data[text] = datetime.now().strftime(self.DATE_FORMAT)
+        self.data[text.strip()] = datetime.now().strftime(self.DATE_FORMAT)
         self.save_data()
 
         self.refresh_list()
@@ -82,9 +82,14 @@ class MainWindow(QMainWindow):
 
         menu = QMenu(self)
         menu.setFont(self.ui.listView.font())
+        edit_action = menu.addAction("Edit")
         delete_action = menu.addAction("Delete")
+
         chosen = menu.exec(self.ui.listView.viewport().mapToGlobal(pos))
-        if chosen == delete_action:
+        if chosen == edit_action:
+            self.edit_key(index.row())
+
+        elif chosen == delete_action:
             del self.data[self.keys[index.row()]]
             self.save_data()
             self.refresh_list()
@@ -94,3 +99,30 @@ class MainWindow(QMainWindow):
         today = datetime.now().date()
         diff = today - last_date
         return diff.days
+
+    def edit_key(self, row):
+        old_key = self.keys[row]
+
+        new_key, ok = QInputDialog.getText(
+            self,
+            "Edit activity",
+            "Name:",
+            text=old_key
+        )
+
+        if not ok:
+            return None
+
+        new_key = new_key.strip()
+        if not new_key or new_key == old_key:
+            return None
+
+        if new_key in self.data:
+            QMessageBox.warning(
+                self, "Duplicate", f'"{new_key}" already exists.'
+            )
+            return self.edit_key(row)
+
+        self.data[new_key] = self.data.pop(old_key)
+        self.save_data()
+        return self.refresh_list()

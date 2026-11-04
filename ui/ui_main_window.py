@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'main_windowpYlFLl.ui'
+## Form generated from reading UI file 'main_windowthAtFE.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.12.0
 ##
@@ -24,6 +24,8 @@ class Ui_MainWindow(object):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(700, 540)
+        icon = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.AddressBookNew))
+        MainWindow.setWindowIcon(icon)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout = QVBoxLayout(self.centralwidget)
@@ -79,7 +81,8 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Activity log", None))
+        self.lineEdit.setPlaceholderText(QCoreApplication.translate("MainWindow", u"What did you do today?", None))
+        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Enter", None))
     # retranslateUi
 

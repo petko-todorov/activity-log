@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 
-from PySide6.QtCore import QStringListModel, Qt
+from PySide6.QtCore import QStringListModel, Qt, QTimer
 from PySide6.QtWidgets import QAbstractItemView, QMainWindow, QCompleter, QMenu
 
 import storage
@@ -14,6 +14,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.keys = None
+        self.data = storage.storage()
+
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
@@ -30,8 +32,6 @@ class MainWindow(QMainWindow):
         self.ui.pushButton.clicked.connect(self.on_ok)
         self.ui.lineEdit.returnPressed.connect(self.on_ok)
 
-        self.data = storage.storage()
-
         self.ui.listView.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.ui.listView.customContextMenuRequested.connect(self.show_context_menu)
 
@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
         self.save_data()
 
         self.refresh_list()
-        self.ui.lineEdit.clear()
+        QTimer.singleShot(0, self.ui.lineEdit.clear)
 
     def save_data(self):
         with open("activities.json", "w", encoding="utf-8") as file:
@@ -65,8 +65,10 @@ class MainWindow(QMainWindow):
             days = self.calculate_days_passed(value)
             if days == 0:
                 items.append(f"{key} - today")
+            elif days == 1:
+                items.append(f"{key} - yesterday")
             else:
-                items.append(f"{key} - {days} day{'' if days == 1 else 's'} ago")
+                items.append(f"{key} - {days} days ago")
         self.model.setStringList(items)
 
         self.completer_model.setStringList(self.keys)

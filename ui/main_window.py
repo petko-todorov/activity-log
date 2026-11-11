@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 
 from PySide6.QtCore import QStringListModel, Qt, QTimer
@@ -49,8 +48,7 @@ class MainWindow(QMainWindow):
         QTimer.singleShot(0, self.ui.lineEdit.clear)
 
     def save_data(self):
-        with open("activities.json", "w", encoding="utf-8") as file:
-            json.dump(self.data, file, indent=4)
+        storage.save(self.data)
 
     def refresh_list(self):
         sorted_items = sorted(

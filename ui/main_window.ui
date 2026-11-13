@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>700</width>
+    <width>589</width>
     <height>540</height>
    </rect>
   </property>
@@ -41,6 +41,16 @@
         </property>
         <property name="placeholderText">
          <string>What did you do today?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboBox">
+        <property name="minimumSize">
+         <size>
+          <width>70</width>
+          <height>31</height>
+         </size>
         </property>
        </widget>
       </item>

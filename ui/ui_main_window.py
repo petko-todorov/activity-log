@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'main_windowthAtFE.ui'
+## Form generated from reading UI file 'main_windowIZRUZN.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.12.0
 ##
@@ -15,15 +15,15 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLineEdit, QListView,
-    QMainWindow, QPushButton, QSizePolicy, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QHBoxLayout, QLineEdit,
+    QListView, QMainWindow, QPushButton, QSizePolicy,
+    QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(700, 540)
+        MainWindow.resize(589, 540)
         icon = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.AddressBookNew))
         MainWindow.setWindowIcon(icon)
         self.centralwidget = QWidget(MainWindow)
@@ -45,6 +45,12 @@ class Ui_MainWindow(object):
         self.lineEdit.setFont(font)
 
         self.horizontalLayout.addWidget(self.lineEdit)
+
+        self.comboBox = QComboBox(self.centralwidget)
+        self.comboBox.setObjectName(u"comboBox")
+        self.comboBox.setMinimumSize(QSize(70, 31))
+
+        self.horizontalLayout.addWidget(self.comboBox)
 
         self.pushButton = QPushButton(self.centralwidget)
         self.pushButton.setObjectName(u"pushButton")

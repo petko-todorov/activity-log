@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from PySide6.QtCore import QStringListModel, Qt, QTimer
 from PySide6.QtWidgets import QAbstractItemView, QMainWindow, QCompleter, QMenu, QMessageBox, QInputDialog
@@ -9,6 +9,12 @@ from ui.ui_main_window import Ui_MainWindow
 
 class MainWindow(QMainWindow):
     DATE_FORMAT = "%H:%M:%S %d.%m.%Y"
+    COMBOBOX_OPTIONS = [
+        {"text": "Now", "days_back": 0},
+        {"text": "Yesterday", "days_back": 1},
+        {"text": "2 days ago", "days_back": 2},
+        {"text": "3 days ago", "days_back": 3},
+    ]
 
     def __init__(self):
         super().__init__()
@@ -36,12 +42,22 @@ class MainWindow(QMainWindow):
 
         self.refresh_list()
 
+        for combo in self.COMBOBOX_OPTIONS:
+            self.ui.comboBox.addItem(combo["text"], combo["days_back"])
+
     def on_ok(self):
         text = self.ui.lineEdit.text()
         if not text:
             return
 
-        self.data[text.strip()] = datetime.now().strftime(self.DATE_FORMAT)
+        days_back = self.ui.comboBox.currentData()
+        if days_back == 0:
+            self.data[text.strip()] = datetime.now().strftime(self.DATE_FORMAT)
+        else:
+            timestamp = datetime.replace(datetime.now(), hour=0, minute=0, second=0, microsecond=0) - timedelta(
+                days=days_back)
+            self.data[text.strip()] = timestamp.strftime(self.DATE_FORMAT)
+
         self.save_data()
 
         self.refresh_list()

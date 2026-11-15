@@ -1,7 +1,13 @@
 import json
 import os
+import sys
 
-file_path = os.path.join(os.path.dirname(__file__), "activities.json")
+if getattr(sys, "frozen", False) or "__compiled__" in globals():
+    base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+else:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+
+file_path = os.path.join(base_dir, "activities.json")
 
 
 def storage():

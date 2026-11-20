@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 
-from PySide6.QtCore import QStringListModel, Qt, QTimer
-from PySide6.QtWidgets import QAbstractItemView, QMainWindow, QCompleter, QMenu, QMessageBox, QInputDialog
-
+from PySide6.QtCore import QStringListModel, Qt, QTimer, QModelIndex
+from PySide6.QtWidgets import QAbstractItemView, QMainWindow, QCompleter, QMenu, QMessageBox, QInputDialog, QListWidget, \
+    QSplitter
 import storage
 from ui.ui_main_window import Ui_MainWindow
 
@@ -40,10 +40,28 @@ class MainWindow(QMainWindow):
         self.ui.listView.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.ui.listView.customContextMenuRequested.connect(self.show_context_menu)
 
-        self.refresh_list()
-
         for combo in self.COMBOBOX_OPTIONS:
             self.ui.comboBox.addItem(combo["text"], combo["days_back"])
+        self.ui.listView.selectionModel().currentChanged.connect(self.show_details)
+        self.details = QListWidget()
+        self.details.setFont(self.ui.listView.font())
+        self.details.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+        self.details.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+
+        parent_layout = self.ui.listView.parent().layout()
+
+        splitter = QSplitter(Qt.Orientation.Horizontal)
+        splitter.setSizePolicy(self.ui.listView.sizePolicy())
+        parent_layout.replaceWidget(self.ui.listView, splitter)
+        splitter.addWidget(self.ui.listView)
+        splitter.addWidget(self.details)
+        splitter.setSizes([250, 200])
+        splitter.setHandleWidth(3)
+        for i in range(1, splitter.count()):
+            handle = splitter.handle(i)
+            handle.setEnabled(False)
+
+        self.refresh_list()
 
     def on_ok(self):
         text = self.ui.lineEdit.text()
@@ -65,13 +83,14 @@ class MainWindow(QMainWindow):
 
         self.save_data()
 
-        self.refresh_list()
+        self.refresh_list(select_key=text)
         QTimer.singleShot(0, self.ui.lineEdit.clear)
+        self.ui.comboBox.setCurrentIndex(0)
 
     def save_data(self):
         storage.save(self.data)
 
-    def refresh_list(self):
+    def refresh_list(self, select_key=None):
         sorted_items = sorted(
             self.data.items(),
             key=lambda x: datetime.strptime(x[1][-1], self.DATE_FORMAT),
@@ -91,6 +110,13 @@ class MainWindow(QMainWindow):
         self.model.setStringList(items)
 
         self.completer_model.setStringList(self.keys)
+
+        if select_key in self.keys:
+            self.ui.listView.setCurrentIndex(self.model.index(self.keys.index(select_key)))
+        else:
+            self.ui.listView.setCurrentIndex(QModelIndex())
+            self.ui.listView.clearSelection()
+            self.details.clear()
 
     def show_context_menu(self, pos):
         index = self.ui.listView.indexAt(pos)
@@ -144,4 +170,22 @@ class MainWindow(QMainWindow):
 
         self.data[new_key] = self.data.pop(old_key)
         self.save_data()
-        return self.refresh_list()
+        return self.refresh_list(select_key=new_key)
+
+    def show_details(self, current):
+        self.details.clear()
+        if not current.isValid():
+            return
+
+        key = self.keys[current.row()]
+        today = datetime.now().date()
+        for date_str in reversed(self.data[key]):
+            dt = datetime.strptime(date_str, self.DATE_FORMAT)
+            diff = (today - dt.date()).days
+            if diff == 0:
+                ago = "today"
+            elif diff == 1:
+                ago = "yesterday"
+            else:
+                ago = f"{diff} days ago"
+            self.details.addItem(f"{ago} | {date_str.split()[1]}")

@@ -128,16 +128,34 @@ class MainWindow(QMainWindow):
         menu = QMenu(self)
         menu.setFont(self.ui.listView.font())
         edit_action = menu.addAction("Edit")
+        delete_last_action = menu.addAction("Delete last entry")
         delete_action = menu.addAction("Delete")
 
         chosen = menu.exec(self.ui.listView.viewport().mapToGlobal(pos))
         if chosen == edit_action:
             self.edit_key(index.row())
 
+        elif chosen == delete_last_action:
+            self.delete_last_entry(index.row())
+
         elif chosen == delete_action:
             del self.data[self.keys[index.row()]]
             self.save_data()
             self.refresh_list()
+
+    def delete_last_entry(self, row):
+        key = self.keys[row]
+        dates = self.data[key]
+        print(dates)
+        if len(dates) <= 1:
+            del self.data[key]
+            self.save_data()
+            self.refresh_list()
+            return
+
+        dates.pop()
+        self.save_data()
+        self.refresh_list(select_key=key)
 
     def calculate_days_passed(self, date_str):
         last_date = datetime.strptime(date_str[-1], self.DATE_FORMAT).date()

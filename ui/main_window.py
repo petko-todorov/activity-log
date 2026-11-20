@@ -51,12 +51,17 @@ class MainWindow(QMainWindow):
             return
 
         days_back = self.ui.comboBox.currentData()
+        now = datetime.now()
         if days_back == 0:
-            self.data[text.strip()] = datetime.now().strftime(self.DATE_FORMAT)
+            timestamp = now
         else:
-            timestamp = datetime.replace(datetime.now(), hour=0, minute=0, second=0, microsecond=0) - timedelta(
-                days=days_back)
-            self.data[text.strip()] = timestamp.strftime(self.DATE_FORMAT)
+            timestamp = now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days_back)
+
+        text = text.strip()
+        dates = self.data.setdefault(text, [])
+        dates.append(timestamp.strftime(self.DATE_FORMAT))
+        dates.sort(key=lambda d: datetime.strptime(d, self.DATE_FORMAT))
+        self.data[text] = dates
 
         self.save_data()
 
@@ -69,7 +74,7 @@ class MainWindow(QMainWindow):
     def refresh_list(self):
         sorted_items = sorted(
             self.data.items(),
-            key=lambda x: datetime.strptime(x[1], self.DATE_FORMAT),
+            key=lambda x: datetime.strptime(x[1][-1], self.DATE_FORMAT),
             reverse=True,
         )
         self.keys = [key for key, _ in sorted_items]
@@ -109,7 +114,7 @@ class MainWindow(QMainWindow):
             self.refresh_list()
 
     def calculate_days_passed(self, date_str):
-        last_date = datetime.strptime(date_str, self.DATE_FORMAT).date()
+        last_date = datetime.strptime(date_str[-1], self.DATE_FORMAT).date()
         today = datetime.now().date()
         diff = today - last_date
         return diff.days

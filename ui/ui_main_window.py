@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'main_windowIZRUZN.ui'
+## Form generated from reading UI file 'main_windownaQogz.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.12.0
 ##
@@ -23,7 +23,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(589, 540)
+        MainWindow.resize(780, 540)
         icon = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.AddressBookNew))
         MainWindow.setWindowIcon(icon)
         self.centralwidget = QWidget(MainWindow)

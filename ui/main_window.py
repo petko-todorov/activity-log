@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from PySide6.QtCore import QStringListModel, Qt, QTimer, QModelIndex
+from PySide6.QtCore import QStringListModel, Qt, QTimer, QModelIndex, QEvent
 from PySide6.QtWidgets import QAbstractItemView, QMainWindow, QCompleter, QMenu, QMessageBox, QInputDialog, QListWidget, \
     QSplitter
 import storage
@@ -33,6 +33,7 @@ class MainWindow(QMainWindow):
         self.completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.completer.setFilterMode(Qt.MatchFlag.MatchContains)
         self.ui.lineEdit.setCompleter(self.completer)
+        self.ui.lineEdit.installEventFilter(self)
 
         self.ui.pushButton.clicked.connect(self.on_ok)
         self.ui.lineEdit.returnPressed.connect(self.on_ok)
@@ -146,7 +147,6 @@ class MainWindow(QMainWindow):
     def delete_last_entry(self, row):
         key = self.keys[row]
         dates = self.data[key]
-        print(dates)
         if len(dates) <= 1:
             del self.data[key]
             self.save_data()
@@ -207,3 +207,11 @@ class MainWindow(QMainWindow):
             else:
                 ago = f"{diff} days ago"
             self.details.addItem(f"{ago} | {date_str.split()[1]}")
+
+    def eventFilter(self, obj, event):
+        if obj is self.ui.lineEdit and event.type() == QEvent.Type.FocusIn:
+            self.details.clear()
+            self.ui.listView.setCurrentIndex(QModelIndex())
+            self.ui.listView.clearSelection()
+
+        return super().eventFilter(obj, event)

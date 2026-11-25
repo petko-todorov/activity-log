@@ -84,7 +84,7 @@ class MainWindow(QMainWindow):
 
         self.save_data()
 
-        self.refresh_list(select_key=text)
+        self.refresh_list()
         QTimer.singleShot(0, self.ui.lineEdit.clear)
         self.ui.comboBox.setCurrentIndex(0)
 
